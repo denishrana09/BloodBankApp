@@ -53,17 +53,10 @@ public class SelectGroup extends AppCompatActivity {
 //                    intent.putExtra("mobile",mMobileno.getText().toString());
 //                    setResult(RC_TYPE,intent);
                     startActivity(intent);
-                    //finish();
                 }else{
                     Toast.makeText(SelectGroup.this, "Write Proper Blood Group Please", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
-
     }
-
-
-
 }
