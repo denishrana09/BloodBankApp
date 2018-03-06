@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    tools:context="com.example.denish.bloodbank.SelectGroup">
+
+    <TextView
+        android:id="@+id/l1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:text="Enter Blood Group"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_select_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:editable="false"
+        android:ems="10"
+        android:hint='e.g. "O+","A-"'
+        android:inputType="textPersonName"
+        android:paddingLeft="16dp" />
+
+    <TextView
+        android:id="@+id/l2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:text="Enter Mobile Number"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/et_mobileno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:editable="false"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp" />
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="16dp"
+        android:text="next"
+        tools:text="next" />
+
+</LinearLayout>
