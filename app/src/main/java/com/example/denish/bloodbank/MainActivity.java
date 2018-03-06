@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private String mUsername;
     private String mMobileNumber;
     private String mGroup;
+    private String mLat;
+    private String mLon;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUserDatabaseReference;
@@ -113,10 +115,13 @@ public class MainActivity extends AppCompatActivity {
 
         mGroup = pref.getString("group", null);
         mMobileNumber = pref.getString("mobile", null);
-        Log.d(TAG, "onCreate: (Group,Mobile) : " + mGroup + "," + mMobileNumber);
+        mLat = pref.getString("lat",null);
+        mLon = pref.getString("lon",null);
+        Log.d(TAG, "onCreate: (Group,Mobile,Lat,Lon) : " + mGroup + "," + mMobileNumber + ","+mLat + "," + mLon);
+
+
         getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
                 .putBoolean("isFirstRun", false).apply();
-
 
         List<DataItem> dataItems = new ArrayList<>();
         mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Clear input box
                 DataItem dataItem =
-                        new DataItem(mUsername,mMobileNumber,mGroup);
+                        new DataItem(mUsername,mMobileNumber,mGroup,mLat,mLon);
                 mUserDatabaseReference.push().setValue(dataItem);
                 Log.d(TAG, "onClick: data sent");
             }

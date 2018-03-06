@@ -9,11 +9,31 @@ public class DataItem {
     private String name;
     private String phoneno;
     private String bloodgroup;
+    private String lat;
+    private String lon;
 
-    public DataItem(String name, String phoneno, String bloodgroup) {
+    public String getLat() {
+        return lat;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public String getLon() {
+        return lon;
+    }
+
+    public void setLon(String lon) {
+        this.lon = lon;
+    }
+
+    public DataItem(String name, String phoneno, String bloodgroup, String lat, String lon) {
         this.name = name;
         this.phoneno = phoneno;
         this.bloodgroup = bloodgroup;
+        this.lat = lat;
+        this.lon = lon;
     }
 
     public DataItem() {
