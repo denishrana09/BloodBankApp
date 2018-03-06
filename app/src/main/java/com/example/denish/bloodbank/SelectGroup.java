@@ -1,6 +1,7 @@
 package com.example.denish.bloodbank;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,7 @@ public class SelectGroup extends AppCompatActivity {
     EditText mSelectGroup,mMobileno;
     Button mNext;
     String type;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +37,23 @@ public class SelectGroup extends AppCompatActivity {
                 if((type = mSelectGroup.getText().toString()).length() > 0 &&
                         type.equals("O+") || type.equals("O-") || type.equals("A-") || type.equals("A+")
                         || type.equals("B+") || type.equals("B-") || type.equals("AB-") || type.equals("AB+")){
-                    Intent intent = new Intent();
+
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                    SharedPreferences.Editor editor = pref.edit();
+
+                    editor.putString("group", type); // Storing string
+                    editor.putString("mobile",mMobileno.getText().toString());
+                    editor.apply();
+                    Log.d(TAG, "onClick: preference added (group,mobile) :" + type + "," + mMobileno.getText().toString());
+
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
 //                    intent.putExtra("group","O+ve");
-                    intent.putExtra("group",type);
+//                    intent.putExtra("group",type);
 //                    intent.putExtra("mobile","9988998877");
-                    intent.putExtra("mobile",mMobileno.getText().toString());
-                    setResult(RC_TYPE,intent);
-                    finish();
+//                    intent.putExtra("mobile",mMobileno.getText().toString());
+//                    setResult(RC_TYPE,intent);
+                    startActivity(intent);
+                    //finish();
                 }else{
                     Toast.makeText(SelectGroup.this, "Write Proper Blood Group Please", Toast.LENGTH_SHORT).show();
                 }

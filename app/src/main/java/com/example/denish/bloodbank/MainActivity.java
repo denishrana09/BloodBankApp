@@ -1,6 +1,7 @@
 package com.example.denish.bloodbank;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -54,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    Boolean isFirstRun1 = true;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d(TAG, "onCreate: starts");
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -96,28 +97,30 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
         Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
                 .getBoolean("isFirstRun", true);
-        Log.d(TAG, "onCreate: IsFirstRun = " + isFirstRun);
-        if(isFirstRun) {
-            //show start activity
-            startActivityForResult(new Intent(MainActivity.this, SelectGroup.class),RC_TYPE);
+
+        if (isFirstRun) {
+            Log.d(TAG, "onCreate: before Intent of SelectGroup");
+            Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
+            startActivity(i1);
+            Log.d(TAG, "onCreate: after Intent of SelectGroup");
             Toast.makeText(MainActivity.this, "First Run", Toast.LENGTH_LONG)
                     .show();
         }
 
-//        Log.d(TAG, "onCreate: before Intent of SelectGroup");
-//        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
-//        startActivityForResult(i1,RC_TYPE);
-//        Log.d(TAG, "onCreate: after Intent of SelectGroup");
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+
+        mGroup = pref.getString("group", null);
+        mMobileNumber = pref.getString("mobile", null);
+        Log.d(TAG, "onCreate: (Group,Mobile) : " + mGroup + "," + mMobileNumber);
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
+
 
         List<DataItem> dataItems = new ArrayList<>();
         mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
         mListView.setAdapter(mDataAdapter);
-
-        // Initialize progress bar
-        //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -261,23 +264,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onActivityResult: starts");
         super.onActivityResult(requestCode, resultCode, data);
 
-//        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
-//                .getBoolean("isFirstRun", true);
-
-        Log.d(TAG, "onActivityResult: IsFirstRun1 "+ isFirstRun1);
-        if(isFirstRun1){
-            if(requestCode == RC_TYPE){
-                mGroup = data.getStringExtra("group");
-                mMobileNumber = data.getStringExtra("mobile");
-                Log.d(TAG, "onActivityResult: Group and Mobile : " + mGroup + " , " + mMobileNumber);
-            }
-        }
-
-        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-                .putBoolean("isFirstRun", false).apply();
-
-        isFirstRun1 = false;
-        Log.d(TAG, "onActivityResult: Ending isFristRun1 " + isFirstRun1);
+//        if(requestCode == RC_TYPE){
+//            mGroup = data.getStringExtra("group");
+//            mMobileNumber = data.getStringExtra("mobile");
+//            Log.d(TAG, "onActivityResult: Group and Mobile : " + mGroup + " , " + mMobileNumber);
+//        }
 
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
