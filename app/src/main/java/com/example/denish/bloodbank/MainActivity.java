@@ -59,12 +59,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d(TAG, "onCreate: before Intent of SelectGroup");
-        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
-//        startActivityForResult(i1,RC_TYPE);
-        startActivityForResult(i1,RC_TYPE);
-        Log.d(TAG, "onCreate: after Intent of SelectGroup");
-
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -75,27 +69,6 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.itemListView);
         temp = findViewById(R.id.temp_button);
 
-        List<DataItem> dataItems = new ArrayList<>();
-        mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
-        mListView.setAdapter(mDataAdapter);
-
-        // Initialize progress bar
-        //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
-
-        temp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Temp clicked");
-                // TODO: Send messages on click
-
-                // Clear input box
-                DataItem dataItem =
-                        new DataItem(mUsername,mMobileNumber,mGroup);
-                mUserDatabaseReference.push().setValue(dataItem);
-                Log.d(TAG, "onClick: data sent");
-            }
-        });
-        
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -120,6 +93,33 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+        Log.d(TAG, "onCreate: before Intent of SelectGroup");
+        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
+        startActivityForResult(i1,RC_TYPE);
+        Log.d(TAG, "onCreate: after Intent of SelectGroup");
+
+        List<DataItem> dataItems = new ArrayList<>();
+        mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
+        mListView.setAdapter(mDataAdapter);
+
+        // Initialize progress bar
+        //mProgressBar.setVisibility(ProgressBar.INVISIBLE);
+
+        temp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Temp clicked");
+
+                // Clear input box
+                DataItem dataItem =
+                        new DataItem(mUsername,mMobileNumber,mGroup);
+                mUserDatabaseReference.push().setValue(dataItem);
+                Log.d(TAG, "onClick: data sent");
+            }
+        });
+        
+
     }
 
     private void onSignedInInitialized(String displayName) {
@@ -205,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onResume: starts");
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
+        startActivityForResult(i1,RC_TYPE);
     }
 
     @Override
