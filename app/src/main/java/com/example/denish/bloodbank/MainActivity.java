@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
+    Boolean isFirstRun1 = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +96,21 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        Log.d(TAG, "onCreate: before Intent of SelectGroup");
-        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
-        startActivityForResult(i1,RC_TYPE);
-        Log.d(TAG, "onCreate: after Intent of SelectGroup");
+
+        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+        Log.d(TAG, "onCreate: IsFirstRun = " + isFirstRun);
+        if(isFirstRun) {
+            //show start activity
+            startActivityForResult(new Intent(MainActivity.this, SelectGroup.class),RC_TYPE);
+            Toast.makeText(MainActivity.this, "First Run", Toast.LENGTH_LONG)
+                    .show();
+        }
+
+//        Log.d(TAG, "onCreate: before Intent of SelectGroup");
+//        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
+//        startActivityForResult(i1,RC_TYPE);
+//        Log.d(TAG, "onCreate: after Intent of SelectGroup");
 
         List<DataItem> dataItems = new ArrayList<>();
         mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
@@ -124,14 +137,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void onSignedInInitialized(String displayName) {
         Log.d(TAG, "onSignedInInitialized: starts");
+        //Log.d(TAG, "onSignedInInitialized: IsFirstRun "+ isFirstRunClone);
         mUsername = displayName;
+        //isFirstRunClone = true;
         attachDatabaseReadListener();
     }
 
     private void onSignedOutCleanup(){
         Log.d(TAG, "onSignedOutCleanup: starts");
+        //Log.d(TAG, "onSignedOutCleanup: IsFirstRun "+ isFirstRunClone);
         mUsername = ANONYMOUS;
         mDataAdapter.clear();
+        //isFirstRunClone = true;
         detachDatabaseReadListener();
     }
 
@@ -194,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.sign_out_menu:
                 AuthUI.getInstance().signOut(this);
+                //isFirstRunClone = true;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -203,30 +221,64 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         Log.d(TAG, "onResume: starts");
+        //Log.d(TAG, "onResume: IsFirstRun " + isFirstRunClone);
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
-        startActivityForResult(i1,RC_TYPE);
     }
 
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause: starts");
         super.onPause();
+        //Log.d(TAG, "onPause: IsFirstRun "+ isFirstRunClone);
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         detachDatabaseReadListener();
         mDataAdapter.clear();
     }
 
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        isFirstRunClone = true;
+//    }
+//
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        isFirstRunClone = true;
+//    }
+
+    //    @Override
+//    protected void onRestart() {
+//        Log.d(TAG, "onRestart: starts");
+//        super.onRestart();
+//        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+//                .putBoolean("isFirstRun", true).commit();
+//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: starts");
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_TYPE){
-            mGroup = data.getStringExtra("group");
-            mMobileNumber = data.getStringExtra("mobile");
 
+//        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+//                .getBoolean("isFirstRun", true);
+
+        Log.d(TAG, "onActivityResult: IsFirstRun1 "+ isFirstRun1);
+        if(isFirstRun1){
+            if(requestCode == RC_TYPE){
+                mGroup = data.getStringExtra("group");
+                mMobileNumber = data.getStringExtra("mobile");
+                Log.d(TAG, "onActivityResult: Group and Mobile : " + mGroup + " , " + mMobileNumber);
+            }
         }
+
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
+
+        isFirstRun1 = false;
+        Log.d(TAG, "onActivityResult: Ending isFristRun1 " + isFirstRun1);
+
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
                 Toast.makeText(this, "Signed In", Toast.LENGTH_SHORT).show();
