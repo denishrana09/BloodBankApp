@@ -1,11 +1,15 @@
 package com.example.denish.bloodbank;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,8 +21,12 @@ import java.util.List;
 
 public class DataAdapter extends ArrayAdapter<DataItem>{
 
+    Button callButton;
+    Context mContext;
+
     public DataAdapter(@NonNull Context context, int resource, @NonNull List<DataItem> objects) {
         super(context, resource, objects);
+        mContext = context;
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -28,10 +36,22 @@ public class DataAdapter extends ArrayAdapter<DataItem>{
 
         TextView nameTextView = convertView.findViewById(R.id.tv_name);
         TextView distanceTextView = convertView.findViewById(R.id.tv_distance);
+        callButton = convertView.findViewById(R.id.btn_call);
 
-        DataItem data = getItem(position);
+        final DataItem data = getItem(position);
         nameTextView.setText(data.getName());
         distanceTextView.setText("12 km");
+
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_CALL);
+                i.setData(Uri.parse("tel:"+data.getPhoneno()));
+                mContext.startActivity(i);
+            }
+        });
+
         return convertView;
     }
 }

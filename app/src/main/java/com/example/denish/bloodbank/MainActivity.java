@@ -2,8 +2,11 @@ package com.example.denish.bloodbank;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN = 1;
     public static final int RC_TYPE = 123;
     private static final String ANONYMOUS = "anonymous";
+    private static final int REQUEST_PHONE_CALL = 11;
 //    String type;
 
     private ListView mListView;
@@ -140,7 +144,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         
+        getCallPermission();
 
+    }
+
+    public void getCallPermission(){
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{android.Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+        }else{
+            Toast.makeText(this, "call permission done", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void onSignedInInitialized(String displayName) {
@@ -244,36 +259,10 @@ public class MainActivity extends AppCompatActivity {
         mDataAdapter.clear();
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        isFirstRunClone = true;
-//    }
-//
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        isFirstRunClone = true;
-//    }
-
-    //    @Override
-//    protected void onRestart() {
-//        Log.d(TAG, "onRestart: starts");
-//        super.onRestart();
-//        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-//                .putBoolean("isFirstRun", true).commit();
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: starts");
         super.onActivityResult(requestCode, resultCode, data);
-
-//        if(requestCode == RC_TYPE){
-//            mGroup = data.getStringExtra("group");
-//            mMobileNumber = data.getStringExtra("mobile");
-//            Log.d(TAG, "onActivityResult: Group and Mobile : " + mGroup + " , " + mMobileNumber);
-//        }
 
         if(requestCode == RC_SIGN_IN){
             if(resultCode == RESULT_OK){
@@ -282,6 +271,20 @@ public class MainActivity extends AppCompatActivity {
             else if(resultCode == RESULT_CANCELED){
                 Toast.makeText(this, "Signed In Cancelled", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_PHONE_CALL: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "got permission for call", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onRequestPermissionsResult: got permission for call");
+                }
+                return;
             }
         }
     }

@@ -45,8 +45,6 @@ public class SelectGroup extends AppCompatActivity
 
     private Boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-//    private LocationRequest mLocationRequest;
-//    private GoogleApiClient mGoogleApiClient;
 
     private static final String TAG = "SelectGroup";
     EditText mSelectGroup, mMobileno;
@@ -79,7 +77,10 @@ public class SelectGroup extends AppCompatActivity
                 .addOnCompleteListener(new OnCompleteListener() {
                     public void onComplete(Task task) {
                         if(task.isSuccessful()) {
-                            // ***REQUEST LAST LOCATION HERE***
+                            Log.d(TAG, "onComplete: task successful , calling getLocationPermission");
+                            getLocationPermission();
+                            Log.d(TAG, "onComplete: task successful , calling getDeviceLocation");
+                            getDeviceLocation();
                         } else {
                             Exception e = task.getException();
                             if (e instanceof ResolvableApiException) {
@@ -114,11 +115,6 @@ public class SelectGroup extends AppCompatActivity
                     Log.d(TAG, "onClick: preference added (group,mobile) :" + type + "," + mMobileno.getText().toString());
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                    intent.putExtra("group","O+ve");
-//                    intent.putExtra("group",type);
-//                    intent.putExtra("mobile","9988998877");
-//                    intent.putExtra("mobile",mMobileno.getText().toString());
-//                    setResult(RC_TYPE,intent);
                     startActivity(intent);
                 } else {
                     Toast.makeText(SelectGroup.this, "Write Proper Blood Group Please", Toast.LENGTH_SHORT).show();
@@ -171,11 +167,6 @@ public class SelectGroup extends AppCompatActivity
                                 editor.apply();
                                 Log.d(TAG, "onComplete: lat,lon : " + lat + "," + lon);
                             }
-//                            else {
-//                                Log.d(TAG, "onComplete: inside else for Location null");
-//
-//                                Log.d(TAG, "onComplete: inside else where currentlocation is null");
-//                            }
                         }
                     }
                 });
