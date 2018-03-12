@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -29,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
@@ -59,7 +61,9 @@ public class MainActivity extends BaseActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    
+    List<DataItem> currentdataItems = new ArrayList<>();
+    String queryResult;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,9 +131,12 @@ public class MainActivity extends BaseActivity {
         getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
                 .putBoolean("isFirstRun", false).apply();
 
-        List<DataItem> dataItems = new ArrayList<>();
-        mDataAdapter = new DataAdapter(this,R.layout.list_item,dataItems);
-        mListView.setAdapter(mDataAdapter);
+        // remove himself from result
+//        if (currentdataItems.size()>0)
+//            currentdataItems.remove(0);
+        Log.d(TAG, "onCreate: CurrentDataItems : "+ currentdataItems.toString());
+        //currentdataItems.add(new DataItem("bro","8956895689","O+","23.25698215","67.23568952"));
+        //logic();
 
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,20 +150,9 @@ public class MainActivity extends BaseActivity {
                 Log.d(TAG, "onClick: data sent");
             }
         });
-        
+
         getCallPermission();
 
-    }
-
-    public void getCallPermission(){
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{android.Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
-        }else{
-            //Toast.makeText(this, "call permission done", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "getCallPermission: call permission done");
-        }
     }
 
     private void onSignedInInitialized(String displayName) {
@@ -176,8 +172,6 @@ public class MainActivity extends BaseActivity {
         detachDatabaseReadListener();
     }
 
-
-
     private void attachDatabaseReadListener(){
         Log.d(TAG, "attachDatabaseReadListener: attached");
         if(mChildEventListener == null) {
@@ -185,7 +179,19 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     DataItem dataItem = dataSnapshot.getValue(DataItem.class);
-                    mDataAdapter.add(dataItem);
+                    //Log.d(TAG, "onChildAdded: DataItem : " + dataItem.toString());
+                    if(dataItem.getBloodgroup().equals(queryResult)){
+                        currentdataItems.add(dataItem);
+                        Log.d(TAG, "onChildAdded: Added DataItem = "+ dataItem.toString());
+                        Log.d(TAG, "onChildAdded: true "+ dataItem.getBloodgroup() + ", query = " + queryResult);
+                    }else {
+                        //Log.d(TAG, "onChildAdded: false "+ dataItem.getBloodgroup() + ", query = " + queryResult);
+                    }
+                    //if(currentdataItems.size() == 4)
+                        logic();
+                    //Log.d(TAG, "onChildAdded: after if");
+                    //Log.d(TAG, "onChildAdded: currentDataItems : "+ currentdataItems.toString());
+                    //mDataAdapter.add(dataItem);
                 }
 
                 @Override
@@ -208,8 +214,11 @@ public class MainActivity extends BaseActivity {
 
                 }
             };
-
-            mUserDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+        Log.d(TAG, "attachDatabaseReadListener: before child");
+        mUserDatabaseReference.addChildEventListener(mChildEventListener);
+        for(DataItem d : currentdataItems){
+            Log.d(TAG, "attachDBListener: " + d.toString() + "\n");
         }
     }
 
@@ -218,6 +227,17 @@ public class MainActivity extends BaseActivity {
         if(mChildEventListener != null) {
             mUserDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
+        }
+    }
+
+    public void getCallPermission(){
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{android.Manifest.permission.CALL_PHONE},REQUEST_PHONE_CALL);
+        }else{
+            //Toast.makeText(this, "call permission done", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "getCallPermission: call permission done");
         }
     }
 
@@ -253,10 +273,17 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String queryResult = sharedPreferences.getString("query","");
+
+        queryResult = sharedPreferences.getString("query","");
         if(queryResult.length() > 0){
             Toast.makeText(this, "Blood Group : "+ queryResult, Toast.LENGTH_SHORT).show();
         }
+
+        for(DataItem d : currentdataItems){
+            Log.d(TAG, "onResume: " + d.toString() + "\n");
+        }
+
+        //logic();
     }
 
     @Override
@@ -298,4 +325,26 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        for(DataItem d : currentdataItems){
+            Log.d(TAG, "onStart: " + d.toString() + "\n");
+        }
+    }
+
+    public void logic(){
+        Collections.sort(currentdataItems,new SortPlaces(new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLon))));
+        for(DataItem d : currentdataItems){
+            Log.d(TAG, "logic: Items : "+ d.toString());
+        }
+        // remove himself from result
+//        if (currentdataItems.size()>0)
+//            currentdataItems.remove(0);
+        //Log.d(TAG, "onStart: CurrentDataItems : "+ currentdataItems.toString());
+        mDataAdapter = new DataAdapter(this,R.layout.list_item, currentdataItems);
+        mListView.setAdapter(mDataAdapter);
+    }
+
 }

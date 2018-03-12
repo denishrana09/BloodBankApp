@@ -62,4 +62,14 @@ public class DataItem {
     public void setBloodgroup(String bloodgroup) {
         this.bloodgroup = bloodgroup;
     }
+
+    @Override
+    public String toString() {
+        return name + " ,"+
+                phoneno + ", "+
+                bloodgroup + ", "+
+                lat + ", "+
+                lon;
+
+    }
 }
