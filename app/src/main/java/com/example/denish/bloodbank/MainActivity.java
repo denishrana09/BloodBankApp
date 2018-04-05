@@ -167,7 +167,10 @@ public class MainActivity extends BaseActivity {
         Log.d(TAG, "onSignedOutCleanup: starts");
         //Log.d(TAG, "onSignedOutCleanup: IsFirstRun "+ isFirstRunClone);
         mUsername = ANONYMOUS;
-        mDataAdapter.clear();
+        if(mDataAdapter!=null) {
+            if (!mDataAdapter.isEmpty())
+                mDataAdapter.clear();
+        }
         //isFirstRunClone = true;
         detachDatabaseReadListener();
     }
@@ -293,7 +296,10 @@ public class MainActivity extends BaseActivity {
         //Log.d(TAG, "onPause: IsFirstRun "+ isFirstRunClone);
         mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         detachDatabaseReadListener();
-        mDataAdapter.clear();
+        if(mDataAdapter!=null){
+            if(!mDataAdapter.isEmpty())
+                mDataAdapter.clear();
+        }
     }
 
     @Override
@@ -335,16 +341,20 @@ public class MainActivity extends BaseActivity {
     }
 
     public void logic(){
-        Collections.sort(currentdataItems,new SortPlaces(new LatLng(Double.parseDouble(mLat),Double.parseDouble(mLon))));
-        for(DataItem d : currentdataItems){
-            Log.d(TAG, "logic: Items : "+ d.toString());
+        if(currentdataItems!=null && mLat!=null && mLon!=null) {
+            Collections.sort(currentdataItems, new SortPlaces(new LatLng(Double.parseDouble(mLat), Double.parseDouble(mLon))));
+            for (DataItem d : currentdataItems) {
+                Log.d(TAG, "logic: Items : " + d.toString());
+            }
         }
         // remove himself from result
 //        if (currentdataItems.size()>0)
 //            currentdataItems.remove(0);
         //Log.d(TAG, "onStart: CurrentDataItems : "+ currentdataItems.toString());
-        mDataAdapter = new DataAdapter(this,R.layout.list_item, currentdataItems);
-        mListView.setAdapter(mDataAdapter);
+        if(currentdataItems!=null) {
+            mDataAdapter = new DataAdapter(this, R.layout.list_item, currentdataItems);
+            mListView.setAdapter(mDataAdapter);
+        }
     }
 
 }

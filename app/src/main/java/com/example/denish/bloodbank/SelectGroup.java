@@ -96,24 +96,32 @@ public class SelectGroup extends BaseActivity
                     }
                 });
 
+        final String mob = mMobileno.getText().toString();
         mNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Inside SelectGroup Listener");
                 if ((type = mSelectGroup.getText().toString()).length() > 0 &&
-                        type.equals("O+") || type.equals("O-") || type.equals("A-") || type.equals("A+")
-                        || type.equals("B+") || type.equals("B-") || type.equals("AB-") || type.equals("AB+")) {
+                        type.equalsIgnoreCase("O+") || type.equalsIgnoreCase("O-")
+                        || type.equalsIgnoreCase("A-") || type.equalsIgnoreCase("A+")
+                        || type.equalsIgnoreCase("B+") || type.equalsIgnoreCase("B-")
+                        || type.equalsIgnoreCase("AB-") || type.equalsIgnoreCase("AB+")) {
 
-                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
-                    SharedPreferences.Editor editor = pref.edit();
+                    if(mob != null){// && mob.matches("639[0-9]{9}")) {
 
-                    editor.putString("group", type); // Storing string
-                    editor.putString("mobile", mMobileno.getText().toString());
-                    editor.apply();
-                    Log.d(TAG, "onClick: preference added (group,mobile) :" + type + "," + mMobileno.getText().toString());
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                        SharedPreferences.Editor editor = pref.edit();
 
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
+                        editor.putString("group", type.toUpperCase()); // Storing string
+                        editor.putString("mobile", mMobileno.getText().toString());
+                        editor.apply();
+                        Log.d(TAG, "onClick: preference added (group,mobile) :" + type + "," + mMobileno.getText().toString());
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                    }else {
+                        Toast.makeText(SelectGroup.this, "Write Proper Mobile Number Please", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(SelectGroup.this, "Write Proper Blood Group Please", Toast.LENGTH_SHORT).show();
                 }
@@ -216,7 +224,7 @@ public class SelectGroup extends BaseActivity
                         }
                     }
                     mLocationPermissionGranted = true;
-                    Toast.makeText(this, "Permission Granted : OnRequest", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "Permission Granted : OnRequest", Toast.LENGTH_SHORT).show();
                     //initialize our map
                     Log.d(TAG, "onRequestPermissionsResult: calling init");
                     init();
@@ -237,13 +245,13 @@ public class SelectGroup extends BaseActivity
                         //startLocationUpdates();
                         getLocationPermission();
                         Log.d(TAG, "onActivityResult: Result Ok for GPS");
-                        Toast.makeText(this, "onActivityResult Ok", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "onActivityResult Ok", Toast.LENGTH_SHORT).show();
                         break;
                     case Activity.RESULT_CANCELED:
                         getLocationPermission();
                         //settingsrequest();//keep asking if imp or do whatever
                         Log.d(TAG, "onActivityResult: Result cancelled for GPS");
-                        Toast.makeText(this, "onActivityResult cancelled", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "onActivityResult cancelled", Toast.LENGTH_SHORT).show();
                         break;
                 }
                 break;
