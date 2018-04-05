@@ -64,6 +64,12 @@ public class MainActivity extends BaseActivity {
     List<DataItem> currentdataItems = new ArrayList<>();
     String queryResult;
 
+
+    private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 789;
+    private Boolean mLocationPermissionGranted = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,6 +158,8 @@ public class MainActivity extends BaseActivity {
         });
 
         getCallPermission();
+        getLocationPermission();
+//        startService(new Intent(this, MyService.class));
 
     }
 
@@ -286,6 +294,9 @@ public class MainActivity extends BaseActivity {
             Log.d(TAG, "onResume: " + d.toString() + "\n");
         }
 
+
+        startService(new Intent(this, MyService.class));
+
         //logic();
     }
 
@@ -329,6 +340,18 @@ public class MainActivity extends BaseActivity {
                 }
                 return;
             }
+            case LOCATION_PERMISSION_REQUEST_CODE:{
+                if(grantResults.length > 0){
+                    for(int i=0; i<grantResults.length;i++){
+                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            mLocationPermissionGranted = false;
+                            return;
+                        }
+                    }
+                    mLocationPermissionGranted = true;
+                    Log.d(TAG, "onRequestPermissionsResult: " + mLocationPermissionGranted);
+                }
+            }
         }
     }
 
@@ -338,6 +361,7 @@ public class MainActivity extends BaseActivity {
         for(DataItem d : currentdataItems){
             Log.d(TAG, "onStart: " + d.toString() + "\n");
         }
+        startService(new Intent(this, MyService.class));
     }
 
     public void logic(){
@@ -354,6 +378,31 @@ public class MainActivity extends BaseActivity {
         if(currentdataItems!=null) {
             mDataAdapter = new DataAdapter(this, R.layout.list_item, currentdataItems);
             mListView.setAdapter(mDataAdapter);
+            startService(new Intent(this, MyService.class));
+        }
+    }
+
+    private void getLocationPermission(){
+        String permissions[] = {android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
+
+        Log.d(TAG, "getLocationPermission: before if condition");
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED){
+                mLocationPermissionGranted = true;
+                Log.d(TAG, "permission : " + mLocationPermissionGranted);
+            }else {
+                ActivityCompat.requestPermissions(this,
+                        permissions,
+                        LOCATION_PERMISSION_REQUEST_CODE);
+                Log.d(TAG, "getLocationPermission: else part 1");
+            }
+        }else {
+            ActivityCompat.requestPermissions(this,
+                    permissions,
+                    LOCATION_PERMISSION_REQUEST_CODE);
+            Log.d(TAG, "getLocationPermission: else part 2");
         }
     }
 
