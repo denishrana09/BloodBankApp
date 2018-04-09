@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity {
 
     List<DataItem> currentdataItems = new ArrayList<>();
     String queryResult;
-
+    //Map<String, String> userData = new HashMap<String, String>();
 
     private static final String FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -76,7 +76,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         activeToolbar(false);
-
+        FirebaseApp.initializeApp(getApplicationContext());
         Log.d(TAG, "onCreate: starts");
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -95,6 +95,17 @@ public class MainActivity extends BaseActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+                    mUsername = user.getDisplayName();
+                    if (mUsername!=null && mMobileNumber.length() > 0 && mLat != null) {
+//                        userData.put("name", mUsername);
+//                        userData.put("phoneno", mMobileNumber);
+//                        userData.put("bloodgroup", mGroup);
+//                        userData.put("lat", mLat);
+//                        userData.put("lon", mLon);
+                        DataItem dataItem = new DataItem(mUsername,mMobileNumber,mGroup,mLat,mLon);
+                        mUserDatabaseReference.child(mMobileNumber).setValue(dataItem);
+                    }
+                    Log.d(TAG, "onAuthStateChanged: UserName : " + user.getDisplayName());
                     onSignedInInitialized(user.getDisplayName());
 
                 } else {
@@ -141,45 +152,35 @@ public class MainActivity extends BaseActivity {
 //        if (currentdataItems.size()>0)
 //            currentdataItems.remove(0);
         Log.d(TAG, "onCreate: CurrentDataItems : "+ currentdataItems.toString());
-        //currentdataItems.add(new DataItem("bro","8956895689","O+","23.25698215","67.23568952"));
-        //logic();
-
-        temp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onClick: Temp clicked");
-
-                // Clear input box
-                DataItem dataItem =
-                        new DataItem(mUsername,mMobileNumber,mGroup,mLat,mLon);
-                mUserDatabaseReference.push().setValue(dataItem);
-                Log.d(TAG, "onClick: data sent");
-            }
-        });
-
+//        temp.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Log.d(TAG, "onClick: Temp clicked");
+//
+//                // Clear input box
+//                DataItem dataItem =
+//                        new DataItem(mUsername,mMobileNumber,mGroup,mLat,mLon);
+//                mUserDatabaseReference.push().setValue(dataItem);
+//                Log.d(TAG, "onClick: data sent");
+//            }
+//        });
         getCallPermission();
         getLocationPermission();
-//        startService(new Intent(this, MyService.class));
 
     }
 
     private void onSignedInInitialized(String displayName) {
         Log.d(TAG, "onSignedInInitialized: starts");
-        //Log.d(TAG, "onSignedInInitialized: IsFirstRun "+ isFirstRunClone);
-        mUsername = displayName;
-        //isFirstRunClone = true;
         attachDatabaseReadListener();
     }
 
     private void onSignedOutCleanup(){
         Log.d(TAG, "onSignedOutCleanup: starts");
-        //Log.d(TAG, "onSignedOutCleanup: IsFirstRun "+ isFirstRunClone);
         mUsername = ANONYMOUS;
         if(mDataAdapter!=null) {
             if (!mDataAdapter.isEmpty())
                 mDataAdapter.clear();
         }
-        //isFirstRunClone = true;
         detachDatabaseReadListener();
     }
 
@@ -190,16 +191,15 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                     DataItem dataItem = dataSnapshot.getValue(DataItem.class);
-                    //Log.d(TAG, "onChildAdded: DataItem : " + dataItem.toString());
-                    if(dataItem.getBloodgroup().equals(queryResult)){
+                    if (dataItem.getBloodgroup().equals(queryResult)) {
                         currentdataItems.add(dataItem);
-                        Log.d(TAG, "onChildAdded: Added DataItem = "+ dataItem.toString());
-                        Log.d(TAG, "onChildAdded: true "+ dataItem.getBloodgroup() + ", query = " + queryResult);
-                    }else {
+                        Log.d(TAG, "onChildAdded: Added DataItem = " + dataItem.toString());
+                        Log.d(TAG, "onChildAdded: true " + dataItem.getBloodgroup() + ", query = " + queryResult);
+                    } else {
                         //Log.d(TAG, "onChildAdded: false "+ dataItem.getBloodgroup() + ", query = " + queryResult);
                     }
                     //if(currentdataItems.size() == 4)
-                        logic();
+                    logic();
                     //Log.d(TAG, "onChildAdded: after if");
                     //Log.d(TAG, "onChildAdded: currentDataItems : "+ currentdataItems.toString());
                     //mDataAdapter.add(dataItem);
@@ -279,6 +279,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
+        Log.d(TAG, "onCreate: Username : " + mUsername);
         Log.d(TAG, "onResume: starts");
         //Log.d(TAG, "onResume: IsFirstRun " + isFirstRunClone);
         super.onResume();

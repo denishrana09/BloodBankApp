@@ -107,7 +107,7 @@ public class SelectGroup extends BaseActivity
                         || type.equalsIgnoreCase("B+") || type.equalsIgnoreCase("B-")
                         || type.equalsIgnoreCase("AB-") || type.equalsIgnoreCase("AB+")) {
 
-                    if(mob != null){// && mob.matches("639[0-9]{9}")) {
+                    if(mMobileno.getText().toString() != null && mMobileno.getText().toString().length() > 0){// && mob.matches("639[0-9]{9}")) {
 
                         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
                         SharedPreferences.Editor editor = pref.edit();
@@ -116,7 +116,7 @@ public class SelectGroup extends BaseActivity
                         editor.putString("mobile", mMobileno.getText().toString());
                         editor.apply();
                         Log.d(TAG, "onClick: preference added (group,mobile) :" + type + "," + mMobileno.getText().toString());
-
+                        Log.d(TAG, "onClick: lat,lon : " + latitude + "," + longitude);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                     }else {
@@ -171,6 +171,8 @@ public class SelectGroup extends BaseActivity
                                 editor.putString("lat", lat + "");
                                 editor.putString("lon", lon + "");
                                 editor.apply();
+                                latitude = lat;
+                                longitude = lon;
                                 Log.d(TAG, "onComplete: lat,lon : " + lat + "," + lon);
                             }
                         }
