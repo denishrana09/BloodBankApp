@@ -26,8 +26,8 @@ public class MyService extends Service
 {
     private static final String TAG = "MyService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 500;
-    private static final float LOCATION_DISTANCE = 0f;
+    private static final int LOCATION_INTERVAL = 500;//1000;
+    private static final float LOCATION_DISTANCE = 0f;//2000f;
 
     String dbLat,mLat="";
     String dbLon,mLon="";

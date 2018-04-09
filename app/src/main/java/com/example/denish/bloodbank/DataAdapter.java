@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -39,8 +38,10 @@ public class DataAdapter extends ArrayAdapter<DataItem>{
         callButton = convertView.findViewById(R.id.btn_call);
 
         final DataItem data = getItem(position);
-        nameTextView.setText(data.getName());
-        distanceTextView.setText("12 km");
+        String name = data.getName().substring(0, 1).toUpperCase() + data.getName().substring(1);
+        nameTextView.setText(name);
+        distanceTextView.setVisibility(View.INVISIBLE);
+        //distanceTextView.setText("12 km");
 
         callButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("MissingPermission")
@@ -52,6 +53,8 @@ public class DataAdapter extends ArrayAdapter<DataItem>{
             }
         });
 
+//        nameTextView.setShadowLayer(1.5f,-2,2, Color.GRAY);
+//        distanceTextView.setShadowLayer(1.5f,-2,2,Color.GRAY);
         return convertView;
     }
 }

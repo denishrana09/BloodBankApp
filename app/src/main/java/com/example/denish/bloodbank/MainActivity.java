@@ -103,7 +103,9 @@ public class MainActivity extends BaseActivity {
 //                        userData.put("lat", mLat);
 //                        userData.put("lon", mLon);
                         DataItem dataItem = new DataItem(mUsername,mMobileNumber,mGroup,mLat,mLon);
+                        //if(mUserDatabaseReference.child(mMobileNumber) == null)
                         mUserDatabaseReference.child(mMobileNumber).setValue(dataItem);
+                        Log.d(TAG, "onAuthStateChanged: child added");
                     }
                     Log.d(TAG, "onAuthStateChanged: UserName : " + user.getDisplayName());
                     onSignedInInitialized(user.getDisplayName());
@@ -357,6 +359,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        currentdataItems.clear();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         for(DataItem d : currentdataItems){
@@ -372,11 +380,12 @@ public class MainActivity extends BaseActivity {
                 Log.d(TAG, "logic: Items : " + d.toString());
             }
         }
-        // remove himself from result
-//        if (currentdataItems.size()>0)
-//            currentdataItems.remove(0);
-        //Log.d(TAG, "onStart: CurrentDataItems : "+ currentdataItems.toString());
-        if(currentdataItems!=null) {
+        if(currentdataItems!=null && mMobileNumber!=null) {
+            for(int i=0;i<currentdataItems.size();i++){
+                if(currentdataItems.get(i).getPhoneno().equals(mMobileNumber)){
+                    currentdataItems.remove(i);
+                }
+            }
             mDataAdapter = new DataAdapter(this, R.layout.list_item, currentdataItems);
             mListView.setAdapter(mDataAdapter);
             startService(new Intent(this, MyService.class));
