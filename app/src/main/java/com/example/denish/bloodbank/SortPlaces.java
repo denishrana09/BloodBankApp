@@ -25,11 +25,11 @@ public class SortPlaces implements Comparator<DataItem> {
         double lat2 = Double.parseDouble(o2.getLat());
         double lon2 = Double.parseDouble(o2.getLon());
 
-        double distanceToPlace1 = distance(currentLoc.latitude, currentLoc.longitude, lat1, lon1);
-        double distanceToPlace2 = distance(currentLoc.latitude, currentLoc.longitude, lat2, lon2);
+        double distanceToPlace1 = dis1(currentLoc.latitude, currentLoc.longitude, lat1, lon1);
+        double distanceToPlace2 = dis1(currentLoc.latitude, currentLoc.longitude, lat2, lon2);
         Log.d(TAG, "compare: dis1 - dis2 : " + (distanceToPlace1 - distanceToPlace2));
         Log.d(TAG, "compare: o1 = " + o1.getName() + ", o2 = "+ o2.getName() );
-         return (int) (distanceToPlace1 - distanceToPlace2);
+        return (int) (distanceToPlace1 - distanceToPlace2);
     }
 
 //    public double distance(double fromLat, double fromLon, double toLat, double toLon) {
@@ -43,11 +43,28 @@ public class SortPlaces implements Comparator<DataItem> {
 //        return radius * angle;
 //    }
 
-    public double distance(double fromLat, double fromLon, double toLat, double toLon){
-        double deltaLat = toLat - fromLat;
-        double deltaLon = toLon - fromLon;
-        double result = Math.sqrt(Math.pow(deltaLat,2)+Math.pow(deltaLon,2));
-        //Log.d(TAG, "distance: " + deltaLon);
-        return result;
+
+//    //not using
+//    public double distance(double fromLat, double fromLon, double toLat, double toLon){
+//        double deltaLat = toLat - fromLat;
+//        double deltaLon = toLon - fromLon;
+//        double result = Math.sqrt(Math.pow(deltaLat,2)+Math.pow(deltaLon,2));
+//        //Log.d(TAG, "distance: " + deltaLon);
+//        return result;
+//    }
+
+    public int dis1(double userLat, double userLng,
+                    double venueLat, double venueLng) {
+        double AVERAGE_RADIUS_OF_EARTH_KM = 6371;
+        double latDistance = Math.toRadians(userLat - venueLat);
+        double lngDistance = Math.toRadians(userLng - venueLng);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(venueLat))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return (int) (Math.round(AVERAGE_RADIUS_OF_EARTH_KM * c));
     }
 }

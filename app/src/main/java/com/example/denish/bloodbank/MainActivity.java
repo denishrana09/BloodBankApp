@@ -118,7 +118,7 @@ public class MainActivity extends BaseActivity {
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
                                     .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.EmailBuilder().build(),
+//                                            new AuthUI.IdpConfig.EmailBuilder().build(),
                                             new AuthUI.IdpConfig.GoogleBuilder().build()))
                                     .build(),
                             RC_SIGN_IN);
@@ -134,8 +134,8 @@ public class MainActivity extends BaseActivity {
             Intent i1 = new Intent(getApplicationContext(),SelectGroup.class);
             startActivity(i1);
             Log.d(TAG, "onCreate: after Intent of SelectGroup");
-            Toast.makeText(MainActivity.this, "First Run", Toast.LENGTH_LONG)
-                    .show();
+//            Toast.makeText(MainActivity.this, "First Run", Toast.LENGTH_LONG)
+//                    .show();
         }
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
@@ -266,10 +266,10 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: selecting option");
         switch (item.getItemId()){
-            case R.id.sign_out_menu:
-                AuthUI.getInstance().signOut(this);
-                //isFirstRunClone = true;
-                return true;
+//            case R.id.sign_out_menu:
+//                AuthUI.getInstance().signOut(this);
+//                //isFirstRunClone = true;
+//                return true;
             case R.id.action_search:
                 Intent intent = new Intent(MainActivity.this,SearchActivity.class);
                 startActivity(intent);

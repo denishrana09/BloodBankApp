@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 public class SearchActivity extends BaseActivity {
 
@@ -36,12 +37,22 @@ public class SearchActivity extends BaseActivity {
         mSearchView.setOnQueryTextListener(new android.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG, "onQueryTextSubmit: called");
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                sharedPreferences.edit().putString("query",query).apply();
-                mSearchView.clearFocus();
-                finish();
-                return true;
+                if(query.length() > 0 &&
+                        query.equalsIgnoreCase("O+") || query.equalsIgnoreCase("O-")
+                        || query.equalsIgnoreCase("A-") || query.equalsIgnoreCase("A+")
+                        || query.equalsIgnoreCase("B+") || query.equalsIgnoreCase("B-")
+                        || query.equalsIgnoreCase("AB-") || query.equalsIgnoreCase("AB+")){
+                    Log.d(TAG, "onQueryTextSubmit: called");
+                    query = query.toUpperCase();
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    sharedPreferences.edit().putString("query",query).apply();
+                    mSearchView.clearFocus();
+                    finish();
+                    return true;
+                }else {
+                    Toast.makeText(SearchActivity.this, "Type Valid Blood Group. Ex. O+,B+", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
 
             @Override

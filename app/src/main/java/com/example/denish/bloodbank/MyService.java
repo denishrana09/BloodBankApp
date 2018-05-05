@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.ChildEventListener;
@@ -27,7 +26,7 @@ public class MyService extends Service
     private static final String TAG = "MyService";
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 500;//1000;
-    private static final float LOCATION_DISTANCE = 0f;//2000f;
+    private static final float LOCATION_DISTANCE = 1000f;//2000f;
 
     String dbLat,mLat="";
     String dbLon,mLon="";
@@ -51,8 +50,8 @@ public class MyService extends Service
         public void onLocationChanged(Location location)
         {
             Log.e(TAG, "onLocationChanged: " + location);
-            Toast.makeText(MyService.this, "Location : " + location.getLatitude() + ", " +
-                    location.getLongitude(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MyService.this, "Location : " + location.getLatitude() + ", " +
+//                    location.getLongitude(), Toast.LENGTH_SHORT).show();
             mLastLocation.set(location);
             mLat = location.getLatitude()+"";
             mLon = location.getLongitude()+"";
@@ -63,8 +62,7 @@ public class MyService extends Service
                     if (!mLat.equals(dbLat) && !mLon.equals(dbLon)) {
                         mDBRef.child(mobile).child("lat").setValue(mLat);//updateChildren(userMap);
                         mDBRef.child(mobile).child("lon").setValue(mLon);//updateChildren(userMap);
-                        Double diff = Double.parseDouble(dbLat) - Double.parseDouble(dbLon);
-                        Toast.makeText(MyService.this, "Diff : " + diff, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MyService.this, "Diff ", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -150,8 +148,14 @@ public class MyService extends Service
                     if(user.getPhoneno().equals(mobile)) {
                         dbLat = user.getLat();
                         dbLon = user.getLon();
+                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+                        SharedPreferences.Editor editor = pref.edit();
+
+                        editor.putString("latt", dbLat); // Storing string
+                        editor.putString("lonn", dbLon);
+                        editor.apply();
                         Log.e(TAG, "onChildAdded: got value (" + dbLat + "," + dbLon +")");
-                        Toast.makeText(MyService.this, "got value (" + dbLat + "," + dbLon +")", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MyService.this, "got value (" + dbLat + "," + dbLon +")", Toast.LENGTH_SHORT).show();
                     }
                 }
                 @Override
