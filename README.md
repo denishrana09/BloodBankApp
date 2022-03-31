@@ -34,3 +34,6 @@ so that every users latest location will be available in Database.
  3.If you haven't yet specified your app's SHA-1 fingerprint, do so from the Settings page <a href="https://console.firebase.google.com/u/0/project/_/settings/general/">Settings page</a> of the Firebase console. See <a href="https://developers.google.com/android/guides/client-auth">Authenticating Your Client</a> for details on how to get your app's SHA-1 fingerprint.
  
  4.Enable the sign in method with google. Go to DEVELOP -> Authentication -> SIGN-IN METHODS. You will see Sign-in providers. Find Google and enable it.
+
+
+it is edit
